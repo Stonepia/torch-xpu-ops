@@ -38,6 +38,40 @@ void lu_solve_kernel_xpu(
 
 REGISTER_XPU_DISPATCH(lu_solve_stub, &lu_solve_kernel_xpu);
 
+void ldl_solve_kernel_xpu(
+    const Tensor& LD,
+    const Tensor& pivots,
+    const Tensor& result,
+    bool upper,
+    bool hermitian) {
+  // Mirrors the validation added upstream in pytorch/pytorch#181032 for the
+  // CPU kernel. LAPACK SYTRS writes into unrelated memory if |IPIV(k)| is
+  // outside [1, N] (negative values legally encode 2x2 block pivots), which
+  // corrupts the heap and later crashes the process. Sanity-check
+  // user-provided pivots before dispatch on XPU as well, since this path
+  // forwards to the CPU implementation but otherwise bypasses any guard the
+  // upstream wheel may not yet contain.
+  const auto pivots_abs = pivots.abs();
+  TORCH_CHECK(
+      pivots_abs.ge(1).all().item<bool>(),
+      "Pivots given to ldl_solve must all satisfy |pivot| >= 1. "
+      "Did you properly pass the result of ldl_factor?");
+  TORCH_CHECK(
+      pivots_abs.le(LD.size(-2)).all().item<bool>(),
+      "Pivots given to ldl_solve must all satisfy |pivot| <= LD.size(-2). "
+      "Did you properly pass the result of ldl_factor?");
+
+  const auto LD_cpu = LD.to(LD.options().device(kCPU));
+  const auto pivots_cpu = pivots.to(pivots.options().device(kCPU));
+  auto result_cpu = result.to(result.options().device(kCPU));
+
+  ldl_solve_stub(at::kCPU, LD_cpu, pivots_cpu, result_cpu, upper, hermitian);
+
+  result.copy_(result_cpu);
+}
+
+REGISTER_XPU_DISPATCH(ldl_solve_stub, &ldl_solve_kernel_xpu);
+
 void lu_factor_kernel_fallback(
     const Tensor& input,
     const Tensor& pivots,
