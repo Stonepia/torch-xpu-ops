@@ -1,0 +1,91 @@
+# Agent configuration
+# All agent constants in one place — Python config.py loads from this file.
+# Deployment-specific values can be overridden via environment variables.
+
+# ---------------------------------------------------------------------------
+# Repositories
+# ---------------------------------------------------------------------------
+# Override via env: UPSTREAM_ISSUE_REPO, ISSUE_REPO, PRIVATE_REVIEW_REPO,
+#                   PUBLIC_TARGET_REPO
+repos:
+  # torch-xpu-ops repos
+  xpu_ops_upstream: "intel-sandbox/agentic_xpu"  # upstream ref — not used in active pipeline (no token for intel/torch-xpu-ops)
+  xpu_ops_issue: "intel-sandbox/agentic_xpu"     # issues + PRs for torch-xpu-ops fixes
+  tracking: "intel-sandbox/agentic_xpu"          # tracking/dashboard issues
+  # pytorch repos
+  pytorch_public: "pytorch/pytorch"                  # upstream pytorch
+  pytorch_private: "chuanqi129/pytorch"              # private review PRs for pytorch fixes
+
+# ---------------------------------------------------------------------------
+# Labels
+# ---------------------------------------------------------------------------
+issue_label: "ai_generated"
+
+# Label prefix mapping for issue metadata extraction
+# Labels like "agent_test: ut" map to test_type="ut"
+label_prefixes:
+  agent_test: test_type
+  agent_category: category
+  agent_dependency: dependency
+
+# Stage → GitHub label mapping
+stage_labels:
+  DISCOVERED: "agent:active"
+  TRIAGING: "agent:active"
+  TRIAGED: "agent:triaged"
+  IMPLEMENTING: "agent:active"
+  IN_REVIEW: "agent:active"
+  PUBLIC_PR: "agent:active"
+  CI_WATCH: "agent:active"
+  MERGED: "agent:active"
+  DONE: "agent:done"
+  SKIPPED: "agent:done"
+  NEEDS_HUMAN: "agent:needs-human"
+
+# ---------------------------------------------------------------------------
+# Timeouts & Limits
+# ---------------------------------------------------------------------------
+
+# Per-stage timeouts (seconds)
+stage_timeouts:
+  DISCOVERED: 300
+  TRIAGING: 900
+  IMPLEMENTING: 3600
+  IN_REVIEW: 1800
+  CI_WATCH: 600
+# Limits
+limits:
+  max_agent_attempts: 3
+
+# Terminal stages — pipeline stops advancing when issue reaches one of these
+terminal_stages:
+  - DONE
+  - SKIPPED
+  - NEEDS_HUMAN
+
+# Polling interval (seconds) — temporary, removed when moving to webhooks
+poll_interval: 60
+
+# ---------------------------------------------------------------------------
+# Git
+# ---------------------------------------------------------------------------
+git:
+  review_remote: "review"
+  branch_prefix: "agent/"
+  pr_prefix: "[Agent]"
+
+# ---------------------------------------------------------------------------
+# Agent backend
+# ---------------------------------------------------------------------------
+# Override via env: AGENT_BACKEND, OPENCODE_CMD
+backend:
+  type: "opencode"            # or "copilot"
+  opencode_cmd: "opencode"
+  model: "claude-sonnet-4"    # model name for cost estimation & reporting
+
+# ---------------------------------------------------------------------------
+# Paths (relative to AGENT_DIR unless absolute)
+# ---------------------------------------------------------------------------
+# Override PYTORCH_DIR via env
+paths:
+  pytorch_dir: "~/pytorch"

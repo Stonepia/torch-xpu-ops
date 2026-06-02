@@ -1,0 +1,56 @@
+# Agent issue body template — non-bug issues
+# Used for: enhancement, performance, feature-gap, task, question
+# Placeholders use Python str.format() syntax: {field_name}
+
+name: "Agent Non-Bug Issue Body"
+description: "Template for non-bug issues (enhancement, task, feature-gap, performance, question)"
+
+body: |
+  <!-- agent:status:{stage} -->
+
+  ## Summary
+  {summary}
+
+  ## Type
+  - **Category:** {category}
+  - **Platform:** {platform}
+  - **Related Components:** {related_components}
+
+  ## Objective
+  {objective}
+
+  ## Current Status
+  {current_status}
+
+  ## Context
+  {context}
+
+  ## Action Items
+  - [ ] 🔍 Issue formatted (Discovery Agent)
+    <details><summary>Discovery log</summary>
+    <!-- agent:discovery-log -->
+    </details>
+  - [ ] 🧠 Root cause identified (Triage Agent)
+    <details><summary>Triage log</summary>
+    <!-- agent:triage-log -->
+    </details>
+  - [ ] 🎯 Triage complete — routed to fix agent (agent:triaged)
+  - [ ] 🔧 Fix implemented (Fix Agent)
+    <details><summary>Fix log</summary>
+    <!-- agent:fix-log -->
+    </details>
+  - [ ] ✅ Fix verified locally
+  <details><summary>Verification log</summary>
+  
+  <!-- agent:verification-log -->
+  </details>
+  - [ ] 📋 PR proposed
+  - [ ] 👀 Human review
+  - [ ] 🎉 PR merged
+
+  ## Original Issue
+  <details><summary>Original issue body</summary>
+
+  {original_issue}
+
+  </details>
