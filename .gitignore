@@ -10,4 +10,4 @@
 */**/**/**/**/*.pyc
 .lintbin
 yaml/templates
-tokens.env
+tools/agentic_xpu/.env
