@@ -10,6 +10,13 @@
 
 #pragma once
 
+#include <comm/Macros.h>
+DISABLE_SYCL_DEPRECATED_WARNING_BEGIN
+#define SYCL_DISABLE_FSYCL_SYCLHPP_WARNING
+#include <ATen/xpu/XPUContext.h>
+#undef SYCL_DISABLE_FSYCL_SYCLHPP_WARNING
+DISABLE_SYCL_DEPRECATED_WARNING_END
+
 #include <bit>
 
 #include <ATen/ceil_div.h>
@@ -348,7 +355,7 @@ class LoopScanConfig {
         wg_range_y_(0) {
     size_t wg_size = syclMaxWorkItemsPerSubSlice();
     wg_range_y_ = wg_size / wg_range_x_;
-    const auto target_global_size = syclMaxWorkItemsPerTile();
+    const int64_t target_global_size = at::xpu::getDeviceMaxWorkItems();
     ;
     const size_t max_work_group_num = target_global_size / wg_size;
     const size_t wg_number =

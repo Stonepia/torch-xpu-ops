@@ -12,6 +12,7 @@
 #include <ATen/Dispatch.h>
 #include <ATen/OpMathType.h>
 #include <ATen/native/ForeachUtils.h>
+#include <ATen/xpu/XPUContext.h>
 
 #include <ATen/native/xpu/sycl/ForeachFunctors.h>
 #include <ATen/native/xpu/sycl/MultiTensorApply.h>
@@ -273,7 +274,7 @@ std::vector<Tensor> foreach_norm_kernel(
   int64_t wg_size;
   int max_chunks_per_tensor;
   Tensor output_per_tensor;
-  int64_t simd = syclMaxSubGroupSize();
+  int64_t simd = at::xpu::getDeviceMaxSubGroupSize();
   foreach_norn_kernel_config(
       tensors,
       output_per_tensor_option,
@@ -664,7 +665,7 @@ std::vector<Tensor> foreach_max_kernel(TensorList tensors) {
   thunk_counts = (int*)thunk_counts_dptr.get();
 
   int max_chunks_per_tensor = -1;
-  int64_t simd = syclMaxSubGroupSize();
+  int64_t simd = at::xpu::getDeviceMaxSubGroupSize();
   int64_t kChunkSize = multi_tensor_apply_kernel_get_chunk_size(simd);
   for (const auto t : c10::irange(ntensors)) {
     int max_chunks_this_tensor =

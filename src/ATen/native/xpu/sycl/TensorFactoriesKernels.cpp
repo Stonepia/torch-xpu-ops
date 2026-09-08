@@ -13,6 +13,7 @@
 #include <ATen/native/xpu/sycl/ScanUtils.h>
 #include <ATen/native/xpu/sycl/TensorFactoriesKernels.h>
 #include <ATen/xpu/EmptyTensor.h>
+#include <ATen/xpu/XPUContext.h>
 #include <c10/core/TensorOptions.h>
 #include <comm/DeviceProperties.h>
 #include <comm/SYCLHelpers.h>
@@ -138,7 +139,7 @@ void triu_indices_kernel_template(
     int64_t rectangle_size,
     int64_t triu_size) {
   using Kernel = TriuIndicesKernelFunctor<scalar_t>;
-  int64_t group_size = syclMaxWorkGroupSize<Kernel>();
+  int64_t group_size = at::xpu::getKernelMaxWorkGroupSize<Kernel>();
   auto totalElements = triu_size;
   auto num_groups = at::ceil_div(totalElements, group_size);
   auto total_items = num_groups * group_size;
@@ -216,7 +217,7 @@ void tril_indices_kernel_template(
     int64_t trapezoid_size,
     int64_t tril_size) {
   using Kernel = TrilIndicesKernelFunctor<scalar_t>;
-  int64_t group_size = syclMaxWorkGroupSize<Kernel>();
+  int64_t group_size = at::xpu::getKernelMaxWorkGroupSize<Kernel>();
   auto totalElements = tril_size;
   auto num_groups = at::ceil_div(totalElements, group_size);
   auto total_items = num_groups * group_size;
