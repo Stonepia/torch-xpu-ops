@@ -254,30 +254,13 @@ struct multi_outputs_unroll {
 
 } // namespace policies
 
-static inline int preferred_vector_width(at::DeviceIndex dev_id, int elem_sz) {
-  size_t ret;
-  switch (elem_sz) {
-    case 1:
-      static_assert(sizeof(char) == 1, "the char size is not 1 bytes");
-      ret = syclPrefVectorWidth<char>(dev_id);
-      break;
-    case 2:
-      static_assert(sizeof(short) == 2, "the short size is not 2 bytes");
-      ret = syclPrefVectorWidth<short>(dev_id);
-      break;
-    case 4:
-      ret = syclPrefVectorWidth<int>(dev_id);
-      static_assert(sizeof(int) == 4, "the long size is not 4 bytes");
-      break;
-    case 8:
-      static_assert(sizeof(int64_t) == 8, "the long size is not 8");
-      ret = syclPrefVectorWidth<int64_t>(dev_id);
-      break;
-    default:
-      // no vectorize
-      ret = 1;
-  }
-  return ret;
+static inline int preferred_vector_width(
+    [[maybe_unused]] at::DeviceIndex dev_id,
+    int elem_sz) {
+  // SYCL reports preferred_vector_width_{long,float,double} = 1 on PVC, which
+  // would disable vectorization; use a fixed 16-byte access width (#1348).
+  constexpr int max_vec_bytes = 16;
+  return max_vec_bytes % elem_sz == 0 ? max_vec_bytes / elem_sz : 1;
 }
 
 // Query vector size for specific `scalar_t` on current device.
