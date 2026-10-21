@@ -86,7 +86,8 @@ void upsample_nearest2d_backward_frame(
     float width_scale,
     index_bw_op_t index_bw_op) {
   auto& queue = at::xpu::getCurrentSYCLQueue();
-  auto work_group_size = syclMaxWorkItemsPerSubSlice();
+  int64_t work_group_size = at::xpu::getDeviceMaxSubGroupSize() *
+      at::xpu::getDeviceEUCountPerXeCore();
   int64_t global_range =
       (n + work_group_size - 1) / work_group_size * work_group_size;
 
@@ -163,7 +164,8 @@ void upsample_nearest2d_backward_channels_last_frame(
     const size_t gi_numel,
     index_bw_op_t index_bw_op) {
   auto& queue = at::xpu::getCurrentSYCLQueue();
-  auto work_group_size = syclMaxWorkItemsPerSubSlice();
+  int64_t work_group_size = at::xpu::getDeviceMaxSubGroupSize() *
+      at::xpu::getDeviceEUCountPerXeCore();
   int64_t global_range =
       (gi_numel + work_group_size - 1) / work_group_size * work_group_size;
 
@@ -393,7 +395,8 @@ void upsample_nearest2d_frame(
     index_op_t index_op) {
   auto& queue = at::xpu::getCurrentSYCLQueue();
 
-  auto work_group_size = syclMaxWorkItemsPerSubSlice();
+  int64_t work_group_size = at::xpu::getDeviceMaxSubGroupSize() *
+      at::xpu::getDeviceEUCountPerXeCore();
   int local_x = std::min<int>(lastPow2(width2), work_group_size);
   int local_y = std::min<int>(lastPow2(height2), work_group_size / local_x);
   int local_z = std::min<int>(nc, work_group_size / local_x / local_y);
@@ -468,7 +471,8 @@ void upsample_nearest2d_channels_last_frame(
     index_op_t index_op) {
   auto& queue = at::xpu::getCurrentSYCLQueue();
 
-  auto work_group_size = syclMaxWorkItemsPerSubSlice();
+  int64_t work_group_size = at::xpu::getDeviceMaxSubGroupSize() *
+      at::xpu::getDeviceEUCountPerXeCore();
   int64_t global_range =
       (out_numel + work_group_size - 1) / work_group_size * work_group_size;
   int64_t max_groups = at::xpu::getDeviceMaxWorkItems() / work_group_size;
