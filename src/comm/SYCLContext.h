@@ -10,10 +10,10 @@
 
 #pragma once
 
-#include <comm/DeviceProperties.h>
 #include <comm/Macros.h>
 #include <comm/Runtime.h>
 #include <comm/SYCLHelpers.h>
 
 using namespace at::xpu;
+namespace xpu::sycl {}
 using namespace xpu::sycl;
