@@ -15,5 +15,3 @@
 #include <comm/SYCLHelpers.h>
 
 using namespace at::xpu;
-namespace xpu::sycl {}
-using namespace xpu::sycl;

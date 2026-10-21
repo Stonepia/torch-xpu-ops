@@ -11,10 +11,6 @@
 #pragma once
 
 #include <ATen/ceil_div.h>
-#include <comm/Runtime.h>
-
-// Keep XPUContext after Runtime.h, which wraps the SYCL headers in the
-// host-only warning suppression.
 #include <ATen/xpu/XPUContext.h>
 #include <algorithm>
 
