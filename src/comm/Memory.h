@@ -174,4 +174,4 @@ inline void syclMemsetAsync(void* data, int value, size_t n_bytes) {
 } // namespace sycl
 } // namespace xpu
 
-using namespace xpu::sycl;
+using namespace ::xpu::sycl;

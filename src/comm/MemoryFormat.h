@@ -166,4 +166,4 @@ inline MemoryFormat get_cl_tag_by_ndim(const int64_t ndim) {
 } // namespace sycl
 } // namespace xpu
 
-using namespace xpu::sycl;
+using namespace ::xpu::sycl;
